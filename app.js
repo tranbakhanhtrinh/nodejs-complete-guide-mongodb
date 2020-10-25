@@ -2,9 +2,9 @@ const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
 
-// const adminRoute = require('./routes/admin');
-// const shopRoute = require('./routes/shop');
-const mongoConnect = require('./util/database');
+const adminRoute = require('./routes/admin');
+const shopRoute = require('./routes/shop');
+const mongoConnect = require('./util/database').mongoConnect;
 
 const errorController = require("./controllers/error");
 
@@ -23,16 +23,17 @@ app.use((req, res, next) => {
     //         next();
     //     })
     //     .catch(err => { console.log(err) })
+    next()
 })
 
-// app.use("/admin", adminRoute); // if we add the first argument, the routes in adminRoute will automatically add a prefix /admin
-// app.use(shopRoute);
+app.use("/admin", adminRoute); // if we add the first argument, the routes in adminRoute will automatically add a prefix /admin
+app.use(shopRoute);
 
 app.use(errorController.get404);
 
 const port = process.env.PORT || 3000;
 
-mongoConnect(client => {
+mongoConnect(() => {
     app.listen(port, () => {
         console.log(`Server is running on ${port}`);
     });
